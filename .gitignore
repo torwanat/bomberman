@@ -123,7 +123,7 @@ dist
 .vscode-test
 
 # VSCode workspaces
-.code-workspace
+*.code-workspace
 
 # yarn v2
 .yarn/cache
