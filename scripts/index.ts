@@ -22,9 +22,11 @@ const socket: WebSocket = connection.getWebSocket();
 const w = new Canvas();
 w.drawWorld();
 
+
 const imgsArray: Animate[] = [];
 const img = new Image();
 img.src = "./res/spritesheet.png";
+Animate.incrementTick();
 
 img.onload = function () {
     socket.onmessage = (ev: MessageEvent) => {
@@ -34,7 +36,6 @@ img.onload = function () {
             const dataFromServer: IDataFromServer = JSON.parse(ev.data);
             const staticPropsBoard: Array<Array<string>> = dataFromServer.board;
             const balloons: Array<Balloon> = dataFromServer.balloons;
-            console.log(dataFromServer);
             for (let i = 0; i < staticPropsBoard.length; i++) {
                 for (let j = 0; j < staticPropsBoard[i].length; j++) {
                     switch (staticPropsBoard[i][j]) {
@@ -57,7 +58,6 @@ img.onload = function () {
                     imgsArray.push(new Animate(img, data.balloon.death, data.dimensions, false, { "x": balloon.x, "y": balloon.y }, w));
                 }
             }
-            console.log(imgsArray);
             Animate.animateArray(imgsArray);
         }
     }

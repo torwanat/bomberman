@@ -17,6 +17,8 @@ export default class Animate {
     private canvas: Canvas;
     private timeout: any;
 
+    private static currentTick: number = 0;
+
     public static animateArray = (array: Array<Animate>) => {
         array.forEach((e: Animate) => {
             e.anim();
@@ -29,10 +31,15 @@ export default class Animate {
         });
     }
 
+    public static incrementTick = () => {
+        Animate.currentTick++;
+        setTimeout(window.requestAnimationFrame, 1000 / 60, Animate.incrementTick) // ~60 klatek/s
+    }
+
     constructor(img: CanvasImageSource, instructions: IInstructions, dimensions: { [key: string]: number }, repeat: boolean, coordinates: { [key: string]: number }, canvas: Canvas) {
         this.spritesheet = img;
-        this.tickNumber = 0;
-        this.currentFrame = 0;
+        this.currentFrame = Math.floor((Animate.currentTick / instructions.times[0]) % instructions.times.length);
+        this.tickNumber = Animate.currentTick % instructions.times[this.currentFrame];
         this.frames = instructions.frames;
         this.times = instructions.times;
         this.dimensions = dimensions;
