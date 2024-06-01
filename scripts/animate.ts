@@ -15,6 +15,19 @@ export default class Animate {
     private repeat: boolean;
     private coordinates: { [key: string]: number };
     private canvas: Canvas;
+    private timeout: any;
+
+    public static animateArray = (array: Array<Animate>) => {
+        array.forEach((e: Animate) => {
+            e.anim();
+        });
+    }
+
+    public static clearArrayAnimations = (array: Array<Animate>) => {
+        array.forEach((e: Animate) => {
+            e.stopAnim();
+        });
+    }
 
     constructor(img: CanvasImageSource, instructions: IInstructions, dimensions: { [key: string]: number }, repeat: boolean, coordinates: { [key: string]: number }, canvas: Canvas) {
         this.spritesheet = img;
@@ -28,7 +41,7 @@ export default class Animate {
         this.canvas = canvas;
     }
 
-    public startAnimation() {
+    private startAnimation() {
         this.renderFrame(this.currentFrame);
         this.tickNumber++;
         if (this.tickNumber == this.times[this.currentFrame]) {
@@ -41,14 +54,15 @@ export default class Animate {
     }
 
     private renderFrame(frameNumber: number) {
-        // let canvas = document.createElement("canvas");
-        // canvas.width = this.dimensions.width;
-        // canvas.height = this.dimensions.height;
-        // let ctx = canvas.getContext("2d")!;
-        // ctx.drawImage(this.spritesheet, this.frames[frameNumber].x0, this.frames[frameNumber].y0, this.dimensions.width, this.dimensions.height, 0, 0, this.dimensions.width, this.dimensions.height);
-        // let url = canvas.toDataURL();
-        // let dest = document.getElementById("anim-test")!;
-        // dest.style.backgroundImage = "url('" + url + "')";
         this.canvas.getCanvasContext().drawImage(this.spritesheet, this.frames[frameNumber].x0, this.frames[frameNumber].y0, this.dimensions.width, this.dimensions.height, this.coordinates.x, this.coordinates.y, this.dimensions.width, this.dimensions.height);
+    }
+
+    private anim = () => {
+        this.startAnimation();
+        this.timeout = setTimeout(window.requestAnimationFrame, 1000 / 60, this.anim) // ~60 klatek/s
+    }
+
+    private stopAnim = () => {
+        clearTimeout(this.timeout);
     }
 }

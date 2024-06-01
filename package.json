@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@types/node": "^20.13.0",
     "ts-loader": "^9.5.1",
     "typescipt": "^1.0.0",
     "typescript": "^5.4.5",
