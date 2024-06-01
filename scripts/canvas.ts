@@ -1,6 +1,6 @@
 class Canvas {
     CELL_SIZE = 16;
-    CANVAS_WIDTH = 32 * this.CELL_SIZE;
+    CANVAS_WIDTH = 33 * this.CELL_SIZE;
     CANVAS_HEIGHT = 13 * this.CELL_SIZE;
 
     private canvas!: HTMLCanvasElement;
@@ -12,10 +12,13 @@ class Canvas {
 
     private createCanvas() {
         this.canvas = <HTMLCanvasElement>document.createElement("canvas");
-        this.ctx = this.canvas.getContext("2d")!;
+        this.canvas.className = "main-canvas";
         this.canvas.width = this.CANVAS_WIDTH;
         this.canvas.height = this.CANVAS_HEIGHT;
-        document.body.appendChild(this.canvas);
+        this.ctx = this.canvas.getContext("2d")!;
+        this.ctx.fillStyle = "green";
+        this.ctx.fillRect(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT);
+        document.getElementById("main-container")!.appendChild(this.canvas);
     }
 
     public drawWorld() {
@@ -32,6 +35,10 @@ class Canvas {
         }
 
         this.ctx.stroke();
+    }
+
+    public getCanvasContext() {
+        return this.ctx;
     }
 }
 export default Canvas;

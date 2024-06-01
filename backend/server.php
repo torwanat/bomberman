@@ -1,8 +1,8 @@
 <?php
-$host = '127.0.0.1'; // moja domena w ct8.pl
-$port = 1984; // zarezerwowany w panelu port
+$host = 'localhost'; // moja domena w ct8.pl
+$port = 46089; // zarezerwowany w panelu port
 $transport = 'http';
-$server = stream_socket_server("127.0.0.1:1984", $errno, $errstr);
+$server = stream_socket_server("localhost:46089", $errno, $errstr);
 if (!$server) {
     die("$errstr ($errno)");
 }
