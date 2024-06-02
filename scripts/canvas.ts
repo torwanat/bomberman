@@ -21,6 +21,11 @@ class Canvas {
         document.getElementById("main-container")!.appendChild(this.canvas);
     }
 
+    public clearCanvas() {
+        this.ctx.fillStyle = "green";
+        this.ctx.fillRect(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT);
+    }
+
     public drawWorld() {
         this.ctx.beginPath();
         // first draw rows

@@ -52,7 +52,7 @@ const connection: Connect = new Connect("ws://torvan-bomberman.ct8.pl:1984/socke
 const socket: WebSocket = connection.getWebSocket();
 
 const w = new Canvas();
-w.drawWorld();
+// w.drawWorld();
 
 let boardAnimations: Array<Animate> = [];
 let balloonsAnimations: Array<Animate> = [];
@@ -63,6 +63,7 @@ Animate.incrementTick();
 img.onload = function () {
     socket.onmessage = (ev: MessageEvent) => {
         if (ev.data != "") {
+            w.clearCanvas();
             Animate.clearArrayAnimations(boardAnimations);
             Animate.clearArrayAnimations(balloonsAnimations)
             boardAnimations.length = 0;
