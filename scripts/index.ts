@@ -51,7 +51,7 @@ const drawBalloons = (balloons: Array<Balloon>) => {
 const connection: Connect = new Connect("ws://torvan-bomberman.ct8.pl:1984/sockets/server.php");
 const socket: WebSocket = connection.getWebSocket();
 
-const w = new Canvas();
+const w: Canvas = new Canvas();
 // w.drawWorld();
 
 let boardAnimations: Array<Animate> = [];
@@ -63,18 +63,10 @@ Animate.incrementTick();
 img.onload = function () {
     socket.onmessage = (ev: MessageEvent) => {
         if (ev.data != "") {
-            w.clearCanvas();
-            Animate.clearArrayAnimations(boardAnimations);
-            Animate.clearArrayAnimations(balloonsAnimations)
-            boardAnimations.length = 0;
-            balloonsAnimations.length = 0;
             const dataFromServer: IDataFromServer = JSON.parse(ev.data);
             boardAnimations = drawBoard(dataFromServer.board);
             balloonsAnimations = drawBalloons(dataFromServer.balloons);
-            Animate.animateArray(boardAnimations);
-            Animate.animateArray(balloonsAnimations);
+            Animate.animations = boardAnimations.concat(balloonsAnimations);
         }
     }
-
-
 }
