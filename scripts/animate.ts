@@ -1,3 +1,4 @@
+import Board from "./board";
 import Canvas from "./canvas";
 
 interface IInstructions {
@@ -13,19 +14,9 @@ export default class Animate {
     private repeat: boolean;
     private coordinates: { [key: string]: number };
     private canvas: Canvas;
+    private board: Board;
 
-    private static currentTick: number = 0;
-    public static animations: Array<Animate> = [];
-
-    public static incrementTick = () => {
-        Animate.animations.forEach((e: Animate) => {
-            e.startAnimation();
-        });
-        Animate.currentTick++;
-        setTimeout(window.requestAnimationFrame, 1000 / 60, Animate.incrementTick) // ~60 klatek/s
-    }
-
-    constructor(img: CanvasImageSource, instructions: IInstructions, dimensions: { [key: string]: number }, repeat: boolean, coordinates: { [key: string]: number }, canvas: Canvas) {
+    constructor(img: CanvasImageSource, instructions: IInstructions, dimensions: { [key: string]: number }, repeat: boolean, coordinates: { [key: string]: number }, canvas: Canvas, board: Board) {
         this.spritesheet = img;
         this.frames = instructions.frames;
         this.times = instructions.times;
@@ -33,10 +24,11 @@ export default class Animate {
         this.repeat = repeat;
         this.coordinates = coordinates;
         this.canvas = canvas;
+        this.board = board;
     }
 
-    private startAnimation() {
-        const currentFrame = Math.floor((Animate.currentTick / this.times[0]) % this.times.length);
+    public startAnimation() {
+        const currentFrame = Math.floor((this.board.currentTick / this.times[0]) % this.times.length);
         this.renderFrame(currentFrame);
     }
 
