@@ -28,6 +28,7 @@ const drawBoard = (board: Array<Array<string>>) => {
                     boardAnimations.push(new Animate(img, data.bricks.solid, data.dimensions, true, { "x": i * 16, "y": j * 16 }, w));
                     break;
                 default:
+                    boardAnimations.push(new Animate(img, data.grass, data.dimensions, true, { "x": i * 16, "y": j * 16 }, w));
                     break;
             }
         }
