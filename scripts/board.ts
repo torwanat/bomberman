@@ -23,7 +23,7 @@ export default class Board {
             e.startAnimation();
         });
         this.currentTick++;
-        if (this.currentTick % 15 == 0) {
+        if ((this.currentTick % 16) % 4 == 0) {
             this.moveBalloons();
         }
         setTimeout(window.requestAnimationFrame, 1000 / 60, this.incrementTick) // ~60 klatek/s
@@ -76,16 +76,16 @@ export default class Board {
 
             switch (balloon.direction) {
                 case 0:
-                    balloon.y++;
+                    balloon.y += 1;
                     break;
                 case 1:
-                    balloon.x++;
+                    balloon.x += 1;
                     break;
                 case 2:
-                    balloon.y--;
+                    balloon.y -= 1;
                     break;
                 case 3:
-                    balloon.x--;
+                    balloon.x -= 1;
                     break;
                 default:
                     break;
@@ -119,10 +119,15 @@ export default class Board {
                     break;
             }
 
-            balloon.collides = false;
+            if (balloon.wait == 0) {
+                balloon.collides = false;
+            } else {
+                balloon.wait--;
+            }
 
             if (this.board[positionX][positionY] == "W" || this.board[positionX][positionY] == "B") {
                 balloon.collides = true;
+                balloon.wait += 16;
                 balloon.direction = balloon.direction == 0 ? 3 : balloon.direction--;
             }
         });

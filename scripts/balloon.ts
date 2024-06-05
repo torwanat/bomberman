@@ -5,6 +5,7 @@ export default class Balloon {
     public y: number;
     public alive: boolean;
     public collides: boolean;
+    public wait: number = 0;
 
     constructor(id: number, direction: number, x: number, y: number, alive: boolean, collides: boolean) {
         this.id = id;
