@@ -135,22 +135,20 @@ export default class Board {
             const player = this.playersBoard[i];
             if (player.id == id) {
                 player.moving = true;
+                this.checkPlayerMove(player, key);
+                if (player.collides) break;
                 switch (key) {
                     case "ArrowDown":
                         player.y += 1;
-                        player.direction = 0;
                         break;
                     case "ArrowRight":
                         player.x += 1;
-                        player.direction = 1;
                         break;
                     case "ArrowUp":
                         player.y -= 1;
-                        player.direction = 2;
                         break;
                     case "ArrowLeft":
                         player.x -= 1;
-                        player.direction = 3;
                         break;
                     default:
                         break;
@@ -168,6 +166,52 @@ export default class Board {
                 player.moving = false;
                 break;
             }
+        }
+    }
+
+    private checkPlayerMove(player: Player, key: string) {
+        let positionX: number = Math.round(player.x / 16);
+        let positionY: number = Math.round(player.y / 16);
+
+        switch (key) {
+            case "ArrowDown":
+                player.direction = 0;
+                positionY += 1;
+                break;
+            case "ArrowRight":
+                player.direction = 1;
+                positionX += 1;
+                break;
+            case "ArrowUp":
+                player.direction = 2;
+                positionY -= 1;
+                break;
+            case "ArrowLeft":
+                player.direction = 3;
+                positionX -= 1;
+                break;
+            default:
+                break;
+        }
+
+        player.collides = false;
+        switch (player.direction) {
+            case 0:
+            case 2:
+                if ((this.board[positionX][positionY] == "W" || this.board[positionX][positionY] == "B") && player.y % 16 == 0) {
+                    player.collides = true;
+                } else {
+                    player.x = Math.round(player.x / 16) * 16;
+                }
+                break;
+            case 1:
+            case 3:
+                if ((this.board[positionX][positionY] == "W" || this.board[positionX][positionY] == "B") && player.x % 16 == 0) {
+                    player.collides = true;
+                } else {
+                    player.y = Math.round(player.y / 16) * 16;
+                }
+                break;
         }
     }
 
