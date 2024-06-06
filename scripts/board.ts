@@ -28,6 +28,7 @@ export default class Board {
         if (this.currentTick % 2 == 0) {
             this.moveBalloons();
         }
+        this.movePlayers();
         setTimeout(window.requestAnimationFrame, 1000 / 20, this.incrementTick) // ~60 klatek/s
     }
 
@@ -130,49 +131,30 @@ export default class Board {
         this.updateAnimations();
     }
 
-    public movePlayer(id: number, key: string) {
+    private movePlayers() {
         for (let i = 0; i < this.playersBoard.length; i++) {
             const player = this.playersBoard[i];
-            if (player.id == id) {
-                player.moving = true;
-                console.log("here2");
-
-                this.checkPlayerMove(player, key);
-                break;
-            }
-        }
-        this.updateAnimations();
-    }
-
-    public stopPlayer(id: number) {
-        for (let i = 0; i < this.playersBoard.length; i++) {
-            const player = this.playersBoard[i];
-            if (player.id == id) {
-                player.moving = false;
-                break;
+            if (player.moving) {
+                this.movePlayer(player);
             }
         }
     }
 
-    private checkPlayerMove(player: Player, key: string) {
+    public movePlayer(player: Player) {
         let positionX: number = Math.round(player.x / 16);
         let positionY: number = Math.round(player.y / 16);
 
-        switch (key) {
-            case "ArrowDown":
-                player.direction = 0;
+        switch (player.direction) {
+            case 0:
                 positionY += 1;
                 break;
-            case "ArrowRight":
-                player.direction = 1;
+            case 1:
                 positionX += 1;
                 break;
-            case "ArrowUp":
-                player.direction = 2;
+            case 2:
                 positionY -= 1;
                 break;
-            case "ArrowLeft":
-                player.direction = 3;
+            case 3:
                 positionX -= 1;
                 break;
             default:
@@ -182,20 +164,61 @@ export default class Board {
         switch (player.direction) {
             case 0:
             case 2:
-                if (this.board[positionX][positionY] != "W" && this.board[positionX][positionY] != "B" && player.y % 16 == 0) {
+                if ((this.board[positionX][positionY] == "W" || this.board[positionX][positionY] == "B") && player.y % 16 == 0) {
+                    player.collides = true;
+                } else {
                     player.x = Math.round(player.x / 16) * 16;
                     player.direction == 0 ? player.y += 1 : player.y -= 1;
                 }
                 break;
             case 1:
             case 3:
-                if (this.board[positionX][positionY] != "W" && this.board[positionX][positionY] != "B" && player.x % 16 == 0) {
+                if ((this.board[positionX][positionY] == "W" || this.board[positionX][positionY] == "B") && player.x % 16 == 0) {
+                    player.collides = true;
+                } else {
                     player.y = Math.round(player.y / 16) * 16;
                     player.direction == 1 ? player.x += 1 : player.x -= 1;
-                    console.log(player.x);
-
                 }
                 break;
+            default:
+                break;
+        }
+    }
+
+    public startPlayer(id: number, key: string) {
+        for (let i = 0; i < this.playersBoard.length; i++) {
+            const player = this.playersBoard[i];
+            if (player.id == id) {
+                player.moving = true;
+                switch (key) {
+                    case "ArrowDown":
+                        player.direction = 0;
+                        break;
+                    case "ArrowRight":
+                        player.direction = 1;
+                        break;
+                    case "ArrowUp":
+                        player.direction = 2;
+                        break;
+                    case "ArrowLeft":
+                        player.direction = 3;
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            }
+        }
+        this.updateAnimations()
+    }
+
+    public stopPlayer(id: number) {
+        for (let i = 0; i < this.playersBoard.length; i++) {
+            const player = this.playersBoard[i];
+            if (player.id == id) {
+                player.moving = false;
+                break;
+            }
         }
     }
 
