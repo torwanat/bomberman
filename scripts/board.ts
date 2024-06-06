@@ -25,10 +25,10 @@ export default class Board {
             e.startAnimation();
         });
         this.currentTick++;
-        if ((this.currentTick % 16) % 4 == 0) {
+        if (this.currentTick % 2 == 0) {
             this.moveBalloons();
         }
-        setTimeout(window.requestAnimationFrame, 1000 / 60, this.incrementTick) // ~60 klatek/s
+        setTimeout(window.requestAnimationFrame, 1000 / 20, this.incrementTick) // ~60 klatek/s
     }
 
     public setBoard(board: Array<Array<string>>) {
@@ -135,28 +135,13 @@ export default class Board {
             const player = this.playersBoard[i];
             if (player.id == id) {
                 player.moving = true;
+                console.log("here2");
+
                 this.checkPlayerMove(player, key);
-                if (player.collides) break;
-                switch (key) {
-                    case "ArrowDown":
-                        player.y += 1;
-                        break;
-                    case "ArrowRight":
-                        player.x += 1;
-                        break;
-                    case "ArrowUp":
-                        player.y -= 1;
-                        break;
-                    case "ArrowLeft":
-                        player.x -= 1;
-                        break;
-                    default:
-                        break;
-                }
                 break;
             }
-            this.updateAnimations();
         }
+        this.updateAnimations();
     }
 
     public stopPlayer(id: number) {
@@ -194,22 +179,21 @@ export default class Board {
                 break;
         }
 
-        player.collides = false;
         switch (player.direction) {
             case 0:
             case 2:
-                if ((this.board[positionX][positionY] == "W" || this.board[positionX][positionY] == "B") && player.y % 16 == 0) {
-                    player.collides = true;
-                } else {
+                if (this.board[positionX][positionY] != "W" && this.board[positionX][positionY] != "B" && player.y % 16 == 0) {
                     player.x = Math.round(player.x / 16) * 16;
+                    player.direction == 0 ? player.y += 1 : player.y -= 1;
                 }
                 break;
             case 1:
             case 3:
-                if ((this.board[positionX][positionY] == "W" || this.board[positionX][positionY] == "B") && player.x % 16 == 0) {
-                    player.collides = true;
-                } else {
+                if (this.board[positionX][positionY] != "W" && this.board[positionX][positionY] != "B" && player.x % 16 == 0) {
                     player.y = Math.round(player.y / 16) * 16;
+                    player.direction == 1 ? player.x += 1 : player.x -= 1;
+                    console.log(player.x);
+
                 }
                 break;
         }

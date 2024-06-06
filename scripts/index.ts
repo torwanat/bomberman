@@ -26,6 +26,7 @@ img.onload = function () {
         const key: string = e.key;
         if (key == "ArrowLeft" || key == "ArrowRight" || key == "ArrowUp" || key == "ArrowDown") {
             e.preventDefault();
+            console.log("here");
             gameBoard.movePlayer(playerId, key);
         }
     });
