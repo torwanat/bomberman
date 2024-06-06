@@ -2,11 +2,13 @@ import Animate from "./animate";
 import data from "../res/data.json";
 import Canvas from "./canvas";
 import Balloon from "./balloon";
+import Player from "./player";
 
 
 export default class Board {
     private board: Array<Array<string>> = [];
     private balloonsBoard: Array<Balloon> = [];
+    private playersBoard: Array<Player> = [];
     private canvas: Canvas;
     private img: CanvasImageSource;
     private animations: Array<Animate> = [];
@@ -39,6 +41,11 @@ export default class Board {
         this.updateAnimations();
     }
 
+    public setPlayersBoard(playersBoard: Array<Player>) {
+        this.playersBoard = playersBoard;
+        this.updateAnimations();
+    }
+
     private updateAnimations() {
         this.animations = []
 
@@ -64,6 +71,34 @@ export default class Board {
                 this.animations.push(new Animate(this.img, balloon.direction > 1 ? data.balloon.left : data.balloon.right, data.dimensions, true, { "x": balloon.x, "y": balloon.y }, this.canvas, this));
             } else {
                 this.animations.push(new Animate(this.img, data.balloon.death, data.dimensions, false, { "x": balloon.x, "y": balloon.y }, this.canvas, this));
+            }
+        }
+
+        for (let i: number = 0; i < this.playersBoard.length; i++) {
+            const player: Player = this.playersBoard[i];
+            if (player.moving) {
+                let facing;
+                switch (player.direction) {
+                    case 0:
+                        facing = data.player.down;
+                        break;
+                    case 1:
+                        facing = data.player.right;
+                        break;
+                    case 2:
+                        facing = data.player.up;
+                        break;
+                    case 3:
+                        facing = data.player.left;
+                        break;
+                    default:
+                        break;
+                }
+                this.animations.push(new Animate(this.img, facing!, data.dimensions, true, { "x": player.x, "y": player.y }, this.canvas, this));
+            } else if (!player.alive) {
+                this.animations.push(new Animate(this.img, data.player.death, data.dimensions, false, { "x": player.x, "y": player.y }, this.canvas, this));
+            } else {
+                this.animations.push(new Animate(this.img, data.player.stop, data.dimensions, true, { "x": player.x, "y": player.y }, this.canvas, this));
             }
         }
     }
@@ -93,6 +128,47 @@ export default class Board {
         });
 
         this.updateAnimations();
+    }
+
+    public movePlayer(id: number, key: string) {
+        for (let i = 0; i < this.playersBoard.length; i++) {
+            const player = this.playersBoard[i];
+            if (player.id == id) {
+                player.moving = true;
+                switch (key) {
+                    case "ArrowDown":
+                        player.y += 1;
+                        player.direction = 0;
+                        break;
+                    case "ArrowRight":
+                        player.x += 1;
+                        player.direction = 1;
+                        break;
+                    case "ArrowUp":
+                        player.y -= 1;
+                        player.direction = 2;
+                        break;
+                    case "ArrowLeft":
+                        player.x -= 1;
+                        player.direction = 3;
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            }
+            this.updateAnimations();
+        }
+    }
+
+    public stopPlayer(id: number) {
+        for (let i = 0; i < this.playersBoard.length; i++) {
+            const player = this.playersBoard[i];
+            if (player.id == id) {
+                player.moving = false;
+                break;
+            }
+        }
     }
 
     private checkForCollisions() {
