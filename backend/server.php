@@ -1,18 +1,24 @@
 <?php
-$host = 'localhost'; // moja domena w ct8.pl
-$port = 46089; // zarezerwowany w panelu port
+require "board.php";
+
+$host = 'torvan-bomberman.ct8.pl'; // moja domena w ct8.pl
+$port = 1984; // zarezerwowany w panelu port
 $transport = 'http';
-$server = stream_socket_server("localhost:46089", $errno, $errstr);
+$server = stream_socket_server("tcp://torvan-bomberman.ct8.pl:1984", $errno, $errstr);
 if (!$server) {
     die("$errstr ($errno)");
 }
 $clients = array($server); // tablica klientów
 $write = NULL;
 $except = NULL;
+$btime = microtime(true);
+$ctime = microtime(true);
+
+$game = new Board();
 
 while (true) {
     $changed = $clients;
-    stream_select($changed, $write, $except, 4); // 4s - TICKI!!!!!
+    stream_select($changed, $write, $except, 1); // 4s - TICKI!!!!!
 
     if (in_array($server, $changed)) {
         $client = @stream_socket_accept($server);
@@ -28,9 +34,9 @@ while (true) {
         handshake($client, $headers, $host, $port);
         stream_set_blocking($client, false);
 
-        $data = ["msg" => "Nastąpiło połączenie"];
+        // $data = ["msg" => "Nastąpiło połączenie"];
 
-        send_message($clients, mask(json_encode($data))); //połączenie -> aktualne dane
+        // send_message($clients, mask(json_encode($data_to_send))); //połączenie -> aktualne dane
 
         $found_socket = array_search($server, $changed);
         unset($changed[$found_socket]);
@@ -55,10 +61,26 @@ while (true) {
         }
 
         $response = mask($unmasked);
-        send_message($clients, $response);
+        // send_message($clients, $response);
     }
-
-    send_message($clients, mask(json_encode(["msg" => "tick"])));
+    // if (microtime(true) - $btime > .9) {
+    //     $game->move_balloons();
+    //     $btime = microtime(true);
+    // }
+    // if (microtime(true) - $ctime > 1) {
+    //     $data_to_send = [
+    //         "board" => $game->get_board(),
+    //         "balloons" => $game->get_balloons_board()
+    //     ];
+    //     send_message($clients, mask(json_encode($data_to_send)));
+    //     $ctime = microtime(true);
+    // }
+    $data_to_send = [
+        "board" => $game->get_board(),
+        "balloons" => $game->get_balloons_board()
+    ];
+    send_message($clients, mask(json_encode($data_to_send)));
+    $game->move_balloons();
 }
 fclose($server);
 
